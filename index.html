@@ -69,6 +69,7 @@
             height: 38px;
             border-radius: 50%;
             border: 2px solid var(--gold);
+            object-fit: cover;
         }
 
         .top-balance-info {
@@ -333,7 +334,7 @@
         
         <!-- TOP TOTAL BALANCE BOX -->
         <div class="top-balance-box">
-            <img src="https://i.ibb.co/L51HhhF/babydoge.jpg" alt="BabyDoge Logo" onerror="this.src='https://cryptologos.cc/logos/baby-doge-coin-babydoge-logo.png'">
+            <img src="babydoge.jpg" alt="BabyDoge Logo">
             <div class="top-balance-info">
                 <span class="top-balance-title">TOTAL BALANCE</span>
                 <span class="top-balance-amount"><span id="balance-val">0</span> BABYDOGE</span>
@@ -344,7 +345,7 @@
         <div id="home-screen" class="screen active">
             <div class="tap-area">
                 <div class="coin-btn" onclick="handleTap()">
-                    <img src="https://i.ibb.co/L51HhhF/babydoge.jpg" alt="BabyDoge" class="coin-img" onerror="this.src='https://cryptologos.cc/logos/baby-doge-coin-babydoge-logo.png'">
+                    <img src="babydoge.jpg" alt="BabyDoge" class="coin-img">
                 </div>
             </div>
 
@@ -692,7 +693,7 @@
             })
             .catch(() => {
                 listElement.innerHTML = `<tr><td colspan="4" style="text-align:center; color: #ff4d4d;">
-                    ⚠️ Connection Error. Refresh in a few seconds.
+                  ⚠️ Connection Error. Refresh in a few seconds.
                 </td></tr>`;
             });
         }
