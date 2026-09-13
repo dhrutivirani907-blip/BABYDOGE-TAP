@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    
+    <!-- Disable Cache -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <title>BabyDoge Tap & Earn</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #0b0c10;
+            --card-bg: #1a1c23;
+            --gold: #f3ba2f;
+            --gold-gradient: linear-gradient(135deg, #ffe066 0%, #f3ba2f 50%, #c79100 100%);
+            --text-color: #ffffff;
+            --text-muted: #a0a5b5;
+            --border-color: #2d323f;
+            --green: #28a745;
+            --red: #dc3545;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            flex: 1;
+            padding: 20px;
+            margin-bottom: 70px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* TOP BALANCE BOX WITH LOGO */
+        .top-balance-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 15px rgba(243, 186, 47, 0.15);
+            margin-top: 10px;
+        }
+
+        .top-balance-box img {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+        }
+
+        .top-balance-info {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .top-balance-title {
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .top-balance-amount {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--gold);
+        }
+
+        /* COIN TAP AREA */
+        .tap-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .coin-btn {
+            width: 230px;
+            height: 230px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #2b2b2b 0%, #111111 100%);
+            border: 5px solid var(--gold);
+            box-shadow: 0 0 35px rgba(243, 186, 47, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.05s ease;
+        }
+
+        .coin-btn:active {
+            transform: scale(0.94);
+        }
+
+        .coin-img {
+            width: 170px;
+            height: 170px;
+            border-radius: 50%;
+            object-fit: cover;
+            pointer-events: none;
+        }
+
+        /* ENERGY XP BOX */
+        .energy-box {
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .energy-text {
+            font-size: 15px;
+            font-weight: bold;
+            color: var(--gold);
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #1e2022;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 100%;
+            background: var(--gold-gradient);
+            transition: width 0.2s;
+        }
+
+        .btn {
+            width: 100%;
+            max-width: 320px;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            background: var(--gold-gradient);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(243, 186, 47, 0.2);
+            margin-top: 10px;
+        }
+
+        .btn:disabled {
+            background: #2c3540 !important;
+            color: #6c757d !important;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            width: 100%;
+            max-width: 360px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .input-group label {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            background: #111418;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--gold);
+        }
+
+        .navbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #121418;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            z-index: 999;
+        }
+
+        .nav-item {
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+        }
+
+        .nav-item.active {
+            color: var(--gold);
+        }
+
+        .screen { display: none; width: 100%; }
+        .screen.active { display: flex; flex-direction: column; align-items: center; }
+
+        .admin-table {
+            width: 100%;
+            max-width: 500px;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 13px;
+        }
+
+        .admin-table th, .admin-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .admin-table th {
+            color: var(--gold);
+            background: #111418;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .btn-approve { background: var(--green); }
+        .btn-reject { background: var(--red); }
+
+        /* MODAL STYLES */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            width: 100%;
+            max-width: 360px;
+            border: 1px solid var(--gold);
+            text-align: center;
+        }
+
+        .modal-title { 
+            font-size: 18px; 
+            font-weight: bold; 
+            color: var(--gold); 
+            margin-bottom: 12px; 
+        }
+
+        .modal-desc { 
+            font-size: 14px; 
+            color: #e5e5ea; 
+            line-height: 1.5; 
+            margin-bottom: 20px; 
+        }
+
+        .modal-btn {
+            background: var(--gold-gradient); 
+            color: black; 
+            border: none; 
+            padding: 12px; 
+            width: 100%;
+            border-radius: 10px; 
+            font-weight: bold; 
+            font-size: 15px; 
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- TOP TOTAL BALANCE BOX -->
+        <div class="top-balance-box">
+            <img src="https://i.ibb.co/L51HhhF/babydoge.jpg" alt="BabyDoge Logo" onerror="this.src='https://cryptologos.cc/logos/baby-doge-coin-babydoge-logo.png'">
+            <div class="top-balance-info">
+                <span class="top-balance-title">TOTAL BALANCE</span>
+                <span class="top-balance-amount"><span id="balance-val">0</span> BABYDOGE</span>
+            </div>
+        </div>
+
+        <!-- HOME SCREEN -->
+        <div id="home-screen" class="screen active">
+            <div class="tap-area">
+                <div class="coin-btn" onclick="handleTap()">
+                    <img src="https://i.ibb.co/L51HhhF/babydoge.jpg" alt="BabyDoge" class="coin-img" onerror="this.src='https://cryptologos.cc/logos/baby-doge-coin-babydoge-logo.png'">
+                </div>
+            </div>
+
+            <div class="energy-box">
+                <div class="energy-text">⚡ <span id="xp-val">1000</span> / 1000 XP</div>
+                <div class="progress-bar">
+                    <div id="xp-fill" class="progress-fill" style="width: 100%;"></div>
+                </div>
+            </div>
+
+            <button id="ad-btn" class="btn" onclick="openInstructionModal()" disabled>
+                🎬 Watch Ads & Get 1000 XP
+            </button>
+        </div>
+
+        <!-- WITHDRAW SCREEN -->
+        <div id="withdraw-screen" class="screen">
+            <div class="top-balance-box" style="margin-bottom: 20px;">
+                <div class="top-balance-info" style="text-align: center;">
+                    <span class="top-balance-title">WITHDRAWAL BALANCE</span>
+                    <span class="top-balance-amount"><span id="withdraw-balance-val">0</span> BABYDOGE</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="input-group">
+                    <label>Binance Pay ID (Numbers Only)</label>
+                    <input type="text" id="binance-id" placeholder="Enter Binance Pay ID (e.g., 245189012)">
+                </div>
+
+                <div class="input-group">
+                    <label>Amount (Min: 1,000,000 BABYDOGE)</label>
+                    <input type="number" id="withdraw-amount" placeholder="Min 1000000">
+                </div>
+
+                <button id="withdraw-btn" class="btn" onclick="submitWithdrawal()">Withdraw Now</button>
+            </div>
+        </div>
+
+        <!-- ADMIN PANEL SCREEN -->
+        <div id="admin-screen" class="screen">
+            <div class="top-balance-box" style="margin-bottom: 15px;">
+                <div class="top-balance-info" style="text-align: center;">
+                    <span class="top-balance-title">BABYDOGE ADMIN PANEL</span>
+                    <span class="top-balance-amount" style="font-size: 18px;">Withdrawal Requests</span>
+                </div>
+            </div>
+
+            <button class="btn" style="width: auto; padding: 8px 16px; margin-bottom: 15px;" onclick="fetchWithdrawals()">🔄 Refresh Requests</button>
+
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Binance ID</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="withdrawal-list">
+                    <tr><td colspan="4" style="text-align:center;">Loading requests...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- Mandatory Popup Modal -->
+    <div class="modal" id="instructionModal">
+        <div class="modal-content">
+            <div class="modal-title">⚡ Refill 1000 XP</div>
+            <div class="modal-desc">
+                To successfully get <b>1000 XP</b>:<br><br>
+                Watch Ad for minimum <b>8 seconds</b>.<br>
+                Premature exit will give 0 XP.
+            </div>
+            <button class="modal-btn" onclick="startAdsterraAd()">WATCH AD NOW</button>
+        </div>
+    </div>
+
+    <!-- NAVBAR -->
+    <div class="navbar" id="main-navbar">
+        <div class="nav-item active" id="nav-home" onclick="switchScreen('home-screen', 'nav-home')">HOME</div>
+        <div class="nav-item" id="nav-withdraw" onclick="switchScreen('withdraw-screen', 'nav-withdraw')">WITHDRAW</div>
+        <div class="nav-item" id="nav-admin" style="display:none;" onclick="switchScreen('admin-screen', 'nav-admin')">ADMIN</div>
+    </div>
+
+    <script>
+        const ADSTERRA_DIRECT_LINK = "https://www.profitableratecpmnetwork.com/mag701y1?key=e6dcf81d34580abdf64766ac0be7e76d";
+        const BACKEND_URL = "https://pepe-backend-wkym.onrender.com";
+        const MAX_XP = 1000;
+        const MIN_WITHDRAW = 1000000;
+        
+        let balance = parseInt(localStorage.getItem('babydoge_balance'));
+        if (isNaN(balance) || balance < 0) balance = 0;
+
+        let xp = parseInt(localStorage.getItem('babydoge_xp'));
+        if (isNaN(xp) || xp > MAX_XP) xp = MAX_XP;
+
+        let adStartTime = 0;
+        let isTrackingAd = false;
+        let isWithdrawSubmitting = false;
+
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.ready();
+            window.Telegram.WebApp.expand();
+        }
+
+        function updateUI() {
+            document.getElementById('balance-val').innerText = balance.toLocaleString();
+            document.getElementById('withdraw-balance-val').innerText = balance.toLocaleString();
+            document.getElementById('xp-val').innerText = xp;
+            
+            let fillPercentage = Math.max(0, Math.min(100, (xp / MAX_XP) * 100));
+            document.getElementById('xp-fill').style.width = fillPercentage + '%';
+
+            const adBtn = document.getElementById('ad-btn');
+            if (xp <= 0) {
+                adBtn.disabled = false;
+            } else {
+                adBtn.disabled = true;
+            }
+        }
+
+        function handleTap() {
+            if (xp >= 10) {
+                balance += 1000;
+                xp -= 10;
+                
+                localStorage.setItem('babydoge_balance', balance);
+                localStorage.setItem('babydoge_xp', xp);
+                
+                updateUI();
+            } else {
+                alert("Out of Energy! Watch Ad to refill 1000 XP.");
+            }
+        }
+
+        function openInstructionModal() {
+            if (xp > 0) return;
+            document.getElementById("instructionModal").style.display = "flex";
+        }
+
+        function closeInstructionModal() {
+            document.getElementById("instructionModal").style.display = "none";
+        }
+
+        function startAdsterraAd() {
+            closeInstructionModal();
+
+            const adBtn = document.getElementById('ad-btn');
+            adBtn.disabled = true;
+            adBtn.innerText = "⏳ Watching Ad...";
+
+            adStartTime = Date.now();
+            isTrackingAd = true;
+
+            openExternalLink(ADSTERRA_DIRECT_LINK);
+        }
+
+        window.addEventListener('focus', () => {
+            if (isTrackingAd) {
+                verifyAdRules();
+            }
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && isTrackingAd) {
+                verifyAdRules();
+            }
+        });
+
+        function verifyAdRules() {
+            if (!isTrackingAd) return;
+
+            const totalWatchDuration = (Date.now() - adStartTime) / 1000;
+            isTrackingAd = false;
+
+            if (totalWatchDuration < 8) {
+                alert("⚠️ Verification Failed!\nAapko minimum 8 second ad dekhna zaroori hai.");
+                resetAdButtonState();
+                return;
+            }
+
+            xp = MAX_XP;
+            localStorage.setItem('babydoge_xp', MAX_XP);
+            updateUI();
+
+            fetch(`${BACKEND_URL}/api/bonk/recharge-energy`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ energyAmount: MAX_XP })
+            }).catch(() => {});
+
+            alert("⚡ Refilled 1000 XP Successfully!");
+            resetAdButtonState();
+        }
+
+        function resetAdButtonState() {
+            isTrackingAd = false;
+            const adBtn = document.getElementById('ad-btn');
+            adBtn.innerText = "🎬 Watch Ads & Get 1000 XP";
+            if (xp <= 0) {
+                adBtn.disabled = false;
+            } else {
+                adBtn.disabled = true;
+            }
+        }
+
+        function openExternalLink(url) {
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
+                window.Telegram.WebApp.openLink(url);
+            } else {
+                window.open(url, '_blank');
+            }
+        }
+
+        function switchScreen(screenId, navId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+            document.getElementById(screenId).classList.add('active');
+            if (document.getElementById(navId)) {
+                document.getElementById(navId).classList.add('active');
+            }
+            
+            if (screenId === 'admin-screen') {
+                fetchWithdrawals();
+            } else {
+                updateUI();
+            }
+        }
+
+        function submitWithdrawal() {
+            if (isWithdrawSubmitting) return;
+
+            const btn = document.getElementById('withdraw-btn');
+            const binanceIdInput = document.getElementById('binance-id');
+            const amountInput = document.getElementById('withdraw-amount');
+
+            const binanceId = binanceIdInput.value.trim();
+            const amount = parseInt(amountInput.value);
+
+            // Strict Binance Pay ID Validation (Numbers only, 5-12 digits)
+            const isStrictBinanceID = /^\d{5,12}$/.test(binanceId);
+
+            if (!binanceId || !isStrictBinanceID) {
+                alert("❌ Invalid Binance Pay ID!\nWallet Address Not Allowed. Kripya sirf numerical Binance Pay ID daalein.");
+                return;
+            }
+
+            if (isNaN(amount) || amount < MIN_WITHDRAW) {
+                alert(`Minimum withdrawal is ${MIN_WITHDRAW.toLocaleString()} BABYDOGE!`);
+                return;
+            }
+
+            if (balance <= 0 || amount > balance) {
+                alert("❌ Insufficient BABYDOGE balance!");
+                return;
+            }
+
+            isWithdrawSubmitting = true;
+            btn.disabled = true;
+            btn.innerText = "Processing...";
+
+            balance -= amount;
+            localStorage.setItem('babydoge_balance', balance);
+            updateUI();
+
+            fetch(`${BACKEND_URL}/api/bonk/withdraw`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    binanceId, 
+                    amount, 
+                    tokenType: 'BABYDOGE', // Distinct filter token
+                    currentBalance: balance 
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) {
+                    balance += amount;
+                    localStorage.setItem('babydoge_balance', balance);
+                    updateUI();
+                    alert("❌ " + data.message);
+                    return;
+                }
+                
+                alert("✅ Withdrawal Request Submitted!");
+                binanceIdInput.value = '';
+                amountInput.value = '';
+            })
+            .catch(() => {
+                balance += amount;
+                localStorage.setItem('babydoge_balance', balance);
+                updateUI();
+                alert("❌ Network Error. Please try again.");
+            })
+            .finally(() => {
+                isWithdrawSubmitting = false;
+                btn.disabled = false;
+                btn.innerText = "Withdraw Now";
+            });
+        }
+
+        // FETCH WITHDRAWALS FILTERED FOR BABYDOGE ONLY
+        function fetchWithdrawals() {
+            const listElement = document.getElementById('withdrawal-list');
+            listElement.innerHTML = `<tr><td colspan="4" style="text-align:center;">⏳ Fetching BABYDOGE requests...</td></tr>`;
+
+            fetch(`${BACKEND_URL}/api/bonk/withdrawals`)
+            .then(res => res.json())
+            .then(data => {
+                // Strict filtering for BABYDOGE token requests only
+                const filteredData = Array.isArray(data) 
+                    ? data.filter(item => {
+                        const token = (item.tokenType || item.token_type || '').toUpperCase();
+                        return token === 'BABYDOGE';
+                    }) 
+                    : [];
+
+                if (!filteredData || filteredData.length === 0) {
+                    listElement.innerHTML = `<tr><td colspan="4" style="text-align:center;">No pending BABYDOGE requests found.</td></tr>`;
+                    return;
+                }
+
+                let rowsHtml = '';
+                filteredData.forEach(item => {
+                    const reqId = item.id || item._id;
+                    const bId = item.binanceId || item.binance_id || 'N/A';
+                    rowsHtml += `
+                        <tr>
+                            <td>${bId}</td>
+                            <td>${Number(item.amount).toLocaleString()}</td>
+                            <td>${item.status || 'Pending'}</td>
+                            <td>
+                                <button class="btn-sm btn-approve" onclick="updateStatus('${reqId}', 'Approved')">✓</button>
+                                <button class="btn-sm btn-reject" onclick="updateStatus('${reqId}', 'Rejected')">✗</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                listElement.innerHTML = rowsHtml;
+            })
+            .catch(() => {
+                listElement.innerHTML = `<tr><td colspan="4" style="text-align:center; color: #ff4d4d;">
+                    ⚠️ Connection Error. Refresh in a few seconds.
+                </td></tr>`;
+            });
+        }
+
+        function updateStatus(id, newStatus) {
+            fetch(`${BACKEND_URL}/api/bonk/withdrawals/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            })
+            .then(res => res.json())
+            .then(() => {
+                alert(`Status updated to ${newStatus}`);
+                fetchWithdrawals();
+            })
+            .catch(() => alert("Failed to update status"));
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const isAdmin = urlParams.get('admin') === 'true' || window.location.hash === '#admin';
+
+            if (isAdmin) {
+                document.getElementById('nav-admin').style.display = 'block';
+                switchScreen('admin-screen', 'nav-admin');
+            } else {
+                updateUI();
+            }
+        });
+    </script>
+</body>
+</html>
